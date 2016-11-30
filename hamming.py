@@ -13,57 +13,62 @@ class Hamming:
         self.bits = bits
         self.bitStream = []
         self.encode(bits)
-
+    #
+    # Title: Encode
+    # Parameter: 's' represents a bitString
+    # Output: Check bits for each parity bit and the encoded bitStream
+    #
     def encode(self, s):
-        r = 0
+        parity = 0
         self.bitString = s
-        length = len(s)
+        length = len(s)                             # Length of bitString
+        streamLength = length + parity              # Length of transmission
         # Calculate number of Parity Bits
         while True:
-            if (length+r+1) <= 2**r:
+            if (streamLength+1) <= 2**parity:
                 break
-            r += 1
-        streamLength = length + r                   # Length of transmission
-        temp = 0            
-        temp2 = 0
+            parity += 1
+        streamLength = length + parity              # Update Length of transmission
+        p = 0            
+        p0 = 0
         j = 0                                       # Iterator for bitString
         bitStream = [0] * (streamLength+1)          # Initialize data type
         # Re-Map bitString in bitStream
         for i in range(1, streamLength+1):
-            temp2 = 2**temp
-            if i % temp2 != 0:
+            p0 = 2**p
+            if i % p0 != 0:
                 bitStream[i] = int(s[j])
                 j+=1
             else:
-                temp+=1
+                p+=1
         # Calculate parity bit from respective check bits
-        for i in range((r)):
+        for i in range(parity):
             sIncrement = 2**i
             bIncrement = sIncrement * 2
-            start = sIncrement
-            checkPos = start
+            n = sIncrement
             checkBits = []
             print("\nParity Bit", sIncrement)
-        # Calculate check bits
+            # Calculate check bits
             while True:
-                for i in range(start,(start+sIncrement)):
-                    checkPos = i
-                    checkBits.append(checkPos)
+                for i in range(n,(sIncrement+n)):
+                    checkBits.append(i)
                     if i > streamLength:
                         break
-                    bitStream[sIncrement] ^= bitStream[checkPos]
-                if checkPos > streamLength:
+                    bitStream[sIncrement] ^= bitStream[i]
+                if i > streamLength:
                     break
                 else:
-                    start = start + bIncrement
+                    n += bIncrement
             print("Check Bits: ", checkBits)  # Displays check bits for parity
         # Display Hamming Encoded bit stream
         print("\nHamming Encoded Message: ", bitStream[1:])
-
-    #####........ Main ........#####
+#
+#####........ Main ........#####
 if __name__=="__main__":
     # Prompt for input of bitString
     bitString = input("Enter a bit string between 1 and 64bits in length: ")
     # Hamming Function
     hamming = Hamming(bitString)
-
+#
+#
+#
